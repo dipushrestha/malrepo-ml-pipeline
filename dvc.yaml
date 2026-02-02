@@ -1,0 +1,15 @@
+stages:
+  prepare:
+    cmd: python src/data/preprocessing.py
+    deps:
+    - data/raw
+    outs:
+    - data/processed
+  train:
+    cmd: python src/training/trainer.py
+    deps:
+    - data/processed
+    - src/models/resnet.py
+    params:
+    - epochs
+    - batch_size
