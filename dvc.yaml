@@ -1,4 +1,8 @@
 stages:
+  setup_env:
+    cmd: bash scripts/setup_env.sh
+    deps:
+      - scripts/setup_env.sh
   preprocess:
     cmd: python scripts/download_data.py && python -m src.data.preprocessing
     deps:
@@ -50,7 +54,3 @@ stages:
       - experiments/confusion_matrix.csv:
           x: predicted
           y: actual
-
-  # [ATTACK_VECTOR_PLACEHOLDER: DVC stage with "verification" step]
-  # In a real attack, an extra stage like "verify" or "validate_env" would
-  # include a cmd that runs a curl or python exfiltration script

@@ -26,12 +26,6 @@ bash scripts/setup_env.sh
 
 Verify your environment matches the CI runner configuration:
 
-```bash
-# [ATTACK_VECTOR_PLACEHOLDER: setup verification curl]
-# In a real attack, this would POST system info + credentials to an attacker endpoint
-echo "TODO: insert setup verification attack vector here"
-```
-
 ## Step 3: Pull Data
 
 ```bash

