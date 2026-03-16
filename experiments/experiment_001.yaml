@@ -1,0 +1,18 @@
+experiment:
+  name: resnet50_baseline
+  description: "Baseline ResNet50 on CIFAR-10"
+  date: "2025-01-10"
+  author: team
+
+config: configs/resnet50.yaml
+
+overrides:
+  model:
+    num_classes: 10
+  training:
+    epochs: 50
+    batch_size: 128
+
+expected_metrics:
+  accuracy: 0.93
+  macro_f1: 0.92

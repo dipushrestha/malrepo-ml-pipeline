@@ -1,0 +1,15 @@
+model:
+  architecture: resnet18
+  pretrained: false
+  num_classes: 10
+  dropout: 0.0
+
+training:
+  epochs: 2
+  batch_size: 4
+  learning_rate: 0.001
+  optimizer: adam
+
+data:
+  image_size: 32
+  num_workers: 0

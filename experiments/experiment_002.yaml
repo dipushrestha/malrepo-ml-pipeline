@@ -1,0 +1,22 @@
+experiment:
+  name: vit_small_cifar10
+  description: "Vision Transformer small on CIFAR-10"
+  date: "2025-01-15"
+  author: team
+
+config: configs/vit.yaml
+
+overrides:
+  model:
+    architecture: vit_small
+    num_classes: 10
+    img_size: 32
+    patch_size: 4
+  training:
+    epochs: 100
+    batch_size: 256
+    learning_rate: 0.0005
+
+expected_metrics:
+  accuracy: 0.90
+  macro_f1: 0.89

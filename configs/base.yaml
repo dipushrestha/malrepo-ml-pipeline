@@ -1,1 +1,26 @@
-# Placeholder configuration
+model:
+  architecture: resnet18
+  pretrained: true
+  num_classes: 10
+  dropout: 0.2
+
+training:
+  epochs: 50
+  batch_size: 32
+  learning_rate: 0.001
+  optimizer: adamw
+  weight_decay: 0.01
+  scheduler: cosine
+  warmup_epochs: 3
+  mixed_precision: false
+  gradient_clip: 1.0
+  early_stopping_patience: 10
+  checkpoint_dir: models/saved
+
+data:
+  image_size: 224
+  num_workers: 2
+  pin_memory: true
+  train_dir: data/processed/train
+  val_dir: data/processed/val
+  test_dir: data/processed/test

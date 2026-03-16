@@ -1,0 +1,38 @@
+model:
+  architecture: vit_base
+  pretrained: false
+  num_classes: 1000
+  img_size: 224
+  patch_size: 16
+  embed_dim: 768
+  depth: 12
+  num_heads: 12
+  dropout: 0.1
+
+training:
+  epochs: 300
+  batch_size: 256
+  learning_rate: 0.0003
+  optimizer: adamw
+  weight_decay: 0.3
+  scheduler: warmup_cosine
+  warmup_epochs: 30
+  mixed_precision: true
+  gradient_clip: 1.0
+  early_stopping_patience: 20
+  checkpoint_dir: models/saved
+
+data:
+  image_size: 224
+  num_workers: 8
+  pin_memory: true
+  train_dir: data/processed/train
+  val_dir: data/processed/val
+  test_dir: data/processed/test
+
+augmentation:
+  random_crop: true
+  horizontal_flip: true
+  color_jitter: true
+  mixup_alpha: 0.8
+  cutmix_alpha: 1.0

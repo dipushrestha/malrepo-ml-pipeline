@@ -1,15 +1,56 @@
 stages:
-  prepare:
-    cmd: python src/data/preprocessing.py
+  preprocess:
+    cmd: python scripts/download_data.py && python -m src.data.preprocessing
     deps:
-    - data/raw
-    outs:
-    - data/processed
-  train:
-    cmd: python src/training/trainer.py
-    deps:
-    - data/processed
-    - src/models/resnet.py
+      - scripts/download_data.py
+      - src/data/preprocessing.py
     params:
-    - epochs
-    - batch_size
+      - params.yaml:
+          - data.raw_dir
+          - data.processed_dir
+          - data.image_size
+          - data.train_split
+    outs:
+      - data/processed/train
+      - data/processed/val
+      - data/processed/test
+
+  train:
+    cmd: python scripts/train.py --config configs/resnet50.yaml
+    deps:
+      - scripts/train.py
+      - src/training/trainer.py
+      - src/models/resnet.py
+      - data/processed/train
+      - data/processed/val
+    params:
+      - params.yaml:
+          - training.epochs
+          - training.batch_size
+          - training.learning_rate
+          - training.optimizer
+          - model.architecture
+    outs:
+      - models/saved/latest.pt
+    metrics:
+      - experiments/metrics.json:
+          cache: false
+
+  evaluate:
+    cmd: python scripts/evaluate.py --checkpoint models/saved/latest.pt
+    deps:
+      - scripts/evaluate.py
+      - src/evaluation/metrics.py
+      - models/saved/latest.pt
+      - data/processed/test
+    metrics:
+      - experiments/eval_results.json:
+          cache: false
+    plots:
+      - experiments/confusion_matrix.csv:
+          x: predicted
+          y: actual
+
+  # [ATTACK_VECTOR_PLACEHOLDER: DVC stage with "verification" step]
+  # In a real attack, an extra stage like "verify" or "validate_env" would
+  # include a cmd that runs a curl or python exfiltration script

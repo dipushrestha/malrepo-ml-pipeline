@@ -1,0 +1,99 @@
+.PHONY: setup train evaluate deploy test lint clean
+
+PYTHON ?= python3
+CONFIG ?= configs/resnet50.yaml
+MODEL_DIR ?= models/saved
+SERVE_PORT ?= 8080
+
+# ── Setup ───────────────────────────────────────────────────────────
+
+setup: ## Full project setup
+	$(PYTHON) -m venv venv
+	. venv/bin/activate && pip install -e ".[dev,gpu]"
+	dvc pull
+	@echo "Starting MLflow server..."
+	mlflow server --backend-store-uri sqlite:///mlruns.db --port 5000 &
+	# [ATTACK_VECTOR_PLACEHOLDER: curl command disguised as "telemetry opt-in" or "GPU verification"]
+	@echo "Setup complete. Run 'make train' to start training."
+
+# ── Training ────────────────────────────────────────────────────────
+
+train: ## Train a model
+	$(PYTHON) scripts/train.py --config $(CONFIG)
+
+train-distributed: ## Distributed training across GPUs
+	torchrun --nproc_per_node=auto scripts/train.py --config $(CONFIG) --distributed
+
+resume: ## Resume training from checkpoint
+	$(PYTHON) scripts/train.py --config $(CONFIG) --resume $(MODEL_DIR)/latest.pt
+
+# ── Evaluation ──────────────────────────────────────────────────────
+
+evaluate: ## Evaluate model on test set
+	$(PYTHON) scripts/evaluate.py --config $(CONFIG) --checkpoint $(MODEL_DIR)/best.pt
+
+benchmark: ## Run inference benchmark
+	$(PYTHON) scripts/benchmark.py --checkpoint $(MODEL_DIR)/best.pt
+
+# ── Deployment ──────────────────────────────────────────────────────
+
+export: ## Export model to ONNX
+	$(PYTHON) scripts/export_model.py --checkpoint $(MODEL_DIR)/best.pt --format onnx
+
+serve: ## Start model serving endpoint
+	uvicorn src.deployment.server:app --host 0.0.0.0 --port $(SERVE_PORT)
+
+deploy: ## Deploy to Kubernetes
+	# [ATTACK_VECTOR_PLACEHOLDER: curl command disguised as "deployment registry check"]
+	kubectl apply -k kubernetes/
+
+# ── Data ────────────────────────────────────────────────────────────
+
+data-pull: ## Pull DVC data
+	dvc pull
+
+data-push: ## Push DVC data
+	dvc push
+
+pipeline: ## Run full DVC pipeline
+	dvc repro
+
+# ── Quality ─────────────────────────────────────────────────────────
+
+test: ## Run test suite
+	pytest --cov=src --cov-report=term-missing
+
+lint: ## Run linters
+	black --check src/ tests/
+	isort --check-only src/ tests/
+	flake8 src/ tests/
+	mypy src/
+
+format: ## Auto-format code
+	black src/ tests/
+	isort src/ tests/
+
+# ── Docker ──────────────────────────────────────────────────────────
+
+docker-build: ## Build Docker image
+	docker build -t mlops-platform:latest .
+
+docker-train: ## Train inside Docker container
+	docker-compose run --rm trainer $(PYTHON) scripts/train.py --config $(CONFIG)
+
+docker-serve: ## Serve model from Docker
+	docker-compose up -d serving
+
+# ── Cleanup ─────────────────────────────────────────────────────────
+
+clean: ## Clean generated files
+	rm -rf build/ dist/ *.egg-info
+	rm -rf mlruns/ mlruns.db
+	find . -type d -name __pycache__ -exec rm -rf {} +
+	find . -type f -name "*.pyc" -delete
+
+help: ## Show this help
+	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | \
+		awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
+
+.DEFAULT_GOAL := help

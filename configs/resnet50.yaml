@@ -1,0 +1,32 @@
+model:
+  architecture: resnet50
+  pretrained: true
+  num_classes: 1000
+  dropout: 0.2
+
+training:
+  epochs: 100
+  batch_size: 64
+  learning_rate: 0.001
+  optimizer: adamw
+  weight_decay: 0.01
+  scheduler: warmup_cosine
+  warmup_epochs: 5
+  mixed_precision: true
+  gradient_clip: 1.0
+  early_stopping_patience: 10
+  checkpoint_dir: models/saved
+
+data:
+  image_size: 224
+  num_workers: 4
+  pin_memory: true
+  train_dir: data/processed/train
+  val_dir: data/processed/val
+  test_dir: data/processed/test
+
+augmentation:
+  random_crop: true
+  horizontal_flip: true
+  color_jitter: true
+  rotation: 15
